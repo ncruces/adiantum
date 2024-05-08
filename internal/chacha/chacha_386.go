@@ -15,8 +15,6 @@ import (
 func init() {
 	useSSE2 = cpu.X86.HasSSE2
 	useSSSE3 = cpu.X86.HasSSSE3
-	useAVX = false
-	useAVX2 = false
 }
 
 func initialize(state *[64]byte, key []byte, nonce *[16]byte) {

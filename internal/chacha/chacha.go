@@ -27,6 +27,7 @@ var (
 	useSSSE3 bool
 	useAVX   bool
 	useAVX2  bool
+	useVX    bool
 )
 
 var (
