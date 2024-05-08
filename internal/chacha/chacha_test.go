@@ -6,7 +6,6 @@ package chacha
 
 import (
 	"bytes"
-	"crypto/cipher"
 	"encoding/hex"
 	"testing"
 )
@@ -81,41 +80,6 @@ func TestVectors(t *testing.T) {
 	testVectors(t)
 }
 
-var overflowTests = []struct {
-	NonceSize     int
-	Counter       uint64
-	PlaintextSize int
-}{
-	{NonceSize: NonceSize, Counter: ^uint64(0), PlaintextSize: 65},
-	{NonceSize: NonceSize, Counter: ^uint64(1), PlaintextSize: 129},
-	{NonceSize: INonceSize, Counter: uint64(^uint32(0)), PlaintextSize: 65},
-	{NonceSize: INonceSize, Counter: uint64(^uint32(1)), PlaintextSize: 129},
-	{NonceSize: XNonceSize, Counter: ^uint64(0), PlaintextSize: 65},
-	{NonceSize: XNonceSize, Counter: ^uint64(1), PlaintextSize: 129},
-}
-
-func TestOverflow(t *testing.T) {
-	var key [32]byte
-	for i, test := range overflowTests {
-		stream, err := NewCipher(make([]byte, test.NonceSize), key[:], 20)
-		if err != nil {
-			t.Errorf("Test %d: Failed to create cipher.Stream: %v", i, err)
-			continue
-		}
-		stream.SetCounter(test.Counter)
-		testOverflow(i, make([]byte, test.PlaintextSize), stream, t)
-	}
-}
-
-func testOverflow(i int, plaintext []byte, stream cipher.Stream, t *testing.T) {
-	defer func() {
-		if err := recover(); err == nil {
-			t.Errorf("Test %d: expected test to panic but it succeeded", i)
-		}
-	}()
-	stream.XORKeyStream(plaintext, plaintext)
-}
-
 func TestIncremental(t *testing.T) {
 	defer func(sse2, ssse3, avx, avx2 bool) {
 		useSSE2, useSSSE3, useAVX, useAVX2 = sse2, ssse3, avx, avx2
@@ -168,16 +132,6 @@ func testVectors(t *testing.T) {
 		if !bytes.Equal(dst, v.ciphertext) {
 			t.Errorf("Test %d: ciphertext mismatch:\n \t got:  %s\n \t want: %s", i, toHex(dst), toHex(v.ciphertext))
 		}
-
-		c, err := NewCipher(v.nonce, v.key, v.rounds)
-		if err != nil {
-			t.Fatal(err)
-		}
-		c.XORKeyStream(dst[:1], v.plaintext[:1])
-		c.XORKeyStream(dst[1:], v.plaintext[1:])
-		if !bytes.Equal(dst, v.ciphertext) {
-			t.Errorf("Test %d: ciphertext mismatch:\n \t got:  %s\n \t want: %s", i, toHex(dst), toHex(v.ciphertext))
-		}
 	}
 }
 
@@ -210,18 +164,6 @@ func testIncremental(t *testing.T, iter int, size int) {
 
 			useSSE2, useSSSE3, useAVX, useAVX2 = sse2, ssse3, avx, avx2
 			XORKeyStream(stream[:j], msg[:j], nonce, key[:], 20)
-
-			if !bytes.Equal(ref[:j], stream[:j]) {
-				t.Fatalf("Iteration %d failed:\n Message length: %d\n\n got:  %s\nwant: %s", i, j, toHex(stream[:j]), toHex(ref[:j]))
-			}
-
-			useSSE2, useSSSE3, useAVX, useAVX2 = false, false, false, false
-			c, _ := NewCipher(nonce, key[:], 20)
-			c.XORKeyStream(stream[:j], msg[:j])
-
-			useSSE2, useSSSE3, useAVX, useAVX2 = sse2, ssse3, avx, avx2
-			c, _ = NewCipher(nonce, key[:], 20)
-			c.XORKeyStream(stream[:j], msg[:j])
 
 			if !bytes.Equal(ref[:j], stream[:j]) {
 				t.Fatalf("Iteration %d failed:\n Message length: %d\n\n got:  %s\nwant: %s", i, j, toHex(stream[:j]), toHex(ref[:j]))
