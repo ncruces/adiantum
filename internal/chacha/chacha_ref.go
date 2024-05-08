@@ -2,7 +2,7 @@
 // Use of this source code is governed by a license that can be
 // found in the LICENSE file.
 
-// +build !amd64,!386 gccgo appengine nacl
+//go:build !(gc && (386 || amd64))
 
 package chacha
 

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a license that can be
 // found in the LICENSE file.
 
-// +build 386,!gccgo,!appengine,!nacl amd64,!gccgo,!appengine,!nacl
-
 #include "textflag.h"
 
 DATA ·sigma<>+0x00(SB)/4, $0x61707865

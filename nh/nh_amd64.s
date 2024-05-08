@@ -1,4 +1,4 @@
-// +build amd64,!gccgo,!appengine,!nacl
+//go:build gc
 
 #define Dst DI
 #define Src SI
