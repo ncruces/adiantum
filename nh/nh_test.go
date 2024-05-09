@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 )
 
@@ -24,7 +24,7 @@ type testVector struct {
 
 func readTestVectors(t *testing.T, filename string) []testVector {
 	t.Helper()
-	js, err := ioutil.ReadFile(filename)
+	js, err := os.ReadFile(filename)
 	if err != nil {
 		t.Fatal(err)
 	}

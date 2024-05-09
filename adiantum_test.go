@@ -3,7 +3,7 @@ package adiantum
 import (
 	"encoding/hex"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"lukechampine.com/adiantum/hbsh"
@@ -26,7 +26,7 @@ type testVector struct {
 
 func readTestVectors(t *testing.T, filename string) []testVector {
 	t.Helper()
-	js, err := ioutil.ReadFile(filename)
+	js, err := os.ReadFile(filename)
 	if err != nil {
 		t.Fatal(err)
 	}
