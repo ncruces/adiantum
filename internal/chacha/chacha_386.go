@@ -6,11 +6,7 @@
 
 package chacha
 
-import (
-	"encoding/binary"
-
-	"golang.org/x/sys/cpu"
-)
+import "golang.org/x/sys/cpu"
 
 func init() {
 	useSSE2 = cpu.X86.HasSSE2
@@ -18,12 +14,7 @@ func init() {
 }
 
 func initialize(state *[64]byte, key []byte, nonce *[16]byte) {
-	binary.LittleEndian.PutUint32(state[0:], sigma[0])
-	binary.LittleEndian.PutUint32(state[4:], sigma[1])
-	binary.LittleEndian.PutUint32(state[8:], sigma[2])
-	binary.LittleEndian.PutUint32(state[12:], sigma[3])
-	copy(state[16:], key[:])
-	copy(state[48:], nonce[:])
+	initializeGeneric(state, key, nonce)
 }
 
 // This function is implemented in chacha_386.s

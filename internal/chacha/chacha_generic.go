@@ -6,7 +6,21 @@ package chacha
 
 import "encoding/binary"
 
-var sigma = [4]uint32{0x61707865, 0x3320646e, 0x79622d32, 0x6b206574}
+const (
+	sigma0 uint32 = 0x61707865
+	sigma1 uint32 = 0x3320646e
+	sigma2 uint32 = 0x79622d32
+	sigma3 uint32 = 0x6b206574
+)
+
+func initializeGeneric(state *[64]byte, key []byte, nonce *[16]byte) {
+	binary.LittleEndian.PutUint32(state[0:], sigma0)
+	binary.LittleEndian.PutUint32(state[4:], sigma1)
+	binary.LittleEndian.PutUint32(state[8:], sigma2)
+	binary.LittleEndian.PutUint32(state[12:], sigma3)
+	copy(state[16:], key[:])
+	copy(state[48:], nonce[:])
+}
 
 func xorKeyStreamGeneric(dst, src []byte, block, state *[64]byte, rounds int) int {
 	for len(src) >= 64 {
@@ -192,10 +206,10 @@ func chachaGeneric(dst *[64]byte, state *[64]byte, rounds int) {
 }
 
 func hChaCha20Generic(out *[32]byte, nonce *[16]byte, key *[32]byte) {
-	v00 := sigma[0]
-	v01 := sigma[1]
-	v02 := sigma[2]
-	v03 := sigma[3]
+	v00 := sigma0
+	v01 := sigma1
+	v02 := sigma2
+	v03 := sigma3
 	v04 := binary.LittleEndian.Uint32(key[0:])
 	v05 := binary.LittleEndian.Uint32(key[4:])
 	v06 := binary.LittleEndian.Uint32(key[8:])

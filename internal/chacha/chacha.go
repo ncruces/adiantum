@@ -57,13 +57,6 @@ func setup(state *[64]byte, nonce, key []byte) (err error) {
 		HChaCha20(&tmpKey, &hNonce, &tmpKey)
 		copy(Nonce[8:], nonce[16:])
 		initialize(state, tmpKey[:], &Nonce)
-
-		// BUG(aead): A "good" compiler will remove this (optimizations)
-		//			  But using the provided key instead of tmpKey,
-		//			  will change the key (-> probably confuses users)
-		for i := range tmpKey {
-			tmpKey[i] = 0
-		}
 	default:
 		err = errInvalidNonce
 	}
