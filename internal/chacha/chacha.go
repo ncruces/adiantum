@@ -2,6 +2,9 @@
 // Use of this source code is governed by a license that can be
 // found in the LICENSE file.
 
+// Originally from:
+// https://github.com/aead/chacha20/tree/master/chacha
+
 // Package chacha implements some low-level functions of the
 // ChaCha cipher family.
 package chacha

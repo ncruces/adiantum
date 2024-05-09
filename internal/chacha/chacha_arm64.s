@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build gc && !purego
+// Originally from:
+// https://github.com/golang/crypto/blob/v0.23.0/chacha20/chacha_arm64.s
+
+//go:build gc
 
 #include "textflag.h"
-
-#define NUM_ROUNDS 10
 
 // func xorKeyStreamVX(dst, src []byte, key *[32]byte, nonce *[12]byte, counter *[4]byte, rounds int)
 TEXT ·xorKeyStreamVX(SB), NOSPLIT, $0
