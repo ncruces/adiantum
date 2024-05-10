@@ -1,4 +1,4 @@
-// +build amd64
+//go:build gc
 
 package nh
 

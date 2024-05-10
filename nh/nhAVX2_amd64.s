@@ -1,4 +1,4 @@
-// +build amd64,!gccgo,!appengine,!nacl
+//go:build gc
 
 // Direct translation of nh-avx2-x86_64.S from github.com/google/adiantum
 
