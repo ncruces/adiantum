@@ -2,6 +2,9 @@
 // Use of this source code is governed by a license that can be
 // found in the LICENSE file.
 
+// Originally from:
+// https://github.com/aead/chacha20/tree/master/chacha
+
 // ROTL_SSE rotates all 4 32 bit values of the XMM register v
 // left by n bits using SSE2 instructions (0 <= n <= 32).
 // The XMM register t is used as a temp. register.

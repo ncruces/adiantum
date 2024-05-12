@@ -2,6 +2,9 @@
 // Use of this source code is governed by a license that can be
 // found in the LICENSE file.
 
+// Originally from:
+// https://github.com/aead/chacha20/tree/master/chacha
+
 #include "textflag.h"
 
 DATA ·sigma<>+0x00(SB)/4, $0x61707865

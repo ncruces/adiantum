@@ -2,7 +2,10 @@
 // Use of this source code is governed by a license that can be
 // found in the LICENSE file.
 
-package chacha
+// Originally from:
+// https://github.com/aead/chacha20/tree/master/chacha
+
+package xchacha
 
 import "encoding/binary"
 
@@ -11,6 +14,14 @@ const (
 	sigma1 uint32 = 0x3320646e
 	sigma2 uint32 = 0x79622d32
 	sigma3 uint32 = 0x6b206574
+)
+
+var (
+	useSSE2  bool
+	useSSSE3 bool
+	useAVX   bool
+	useAVX2  bool
+	useVX    bool
 )
 
 func initializeGeneric(state *[64]byte, key []byte, nonce *[16]byte) {
@@ -205,7 +216,11 @@ func chachaGeneric(dst *[64]byte, state *[64]byte, rounds int) {
 	binary.LittleEndian.PutUint32(dst[60:], v15)
 }
 
-func hChaCha20Generic(out *[32]byte, nonce *[16]byte, key *[32]byte) {
+// NOTE: Don't bother trying to optimize hChaCha; it contributes very little to
+// the total runtime of XORKeyStream. I tried swapping in an asm version and it
+// only shaved off about 30ns.
+
+func hChaChaGeneric(out *[32]byte, nonce *[16]byte, key *[32]byte, rounds int) {
 	v00 := sigma0
 	v01 := sigma1
 	v02 := sigma2
@@ -223,7 +238,7 @@ func hChaCha20Generic(out *[32]byte, nonce *[16]byte, key *[32]byte) {
 	v14 := binary.LittleEndian.Uint32(nonce[8:])
 	v15 := binary.LittleEndian.Uint32(nonce[12:])
 
-	for i := 0; i < 20; i += 2 {
+	for i := 0; i < rounds; i += 2 {
 		v00 += v04
 		v12 ^= v00
 		v12 = (v12 << 16) | (v12 >> 16)

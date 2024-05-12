@@ -2,9 +2,12 @@
 // Use of this source code is governed by a license that can be
 // found in the LICENSE file.
 
+// Originally from:
+// https://github.com/aead/chacha20/tree/master/chacha
+
 //go:build gc
 
-package chacha
+package xchacha
 
 import "golang.org/x/sys/cpu"
 
@@ -19,21 +22,6 @@ func init() {
 //
 //go:noescape
 func initialize(state *[64]byte, key []byte, nonce *[16]byte)
-
-// This function is implemented in chacha_amd64.s
-//
-//go:noescape
-func hChaCha20SSE2(out *[32]byte, nonce *[16]byte, key *[32]byte)
-
-// This function is implemented in chacha_amd64.s
-//
-//go:noescape
-func hChaCha20SSSE3(out *[32]byte, nonce *[16]byte, key *[32]byte)
-
-// This function is implemented in chachaAVX2_amd64.s
-//
-//go:noescape
-func hChaCha20AVX(out *[32]byte, nonce *[16]byte, key *[32]byte)
 
 // This function is implemented in chacha_amd64.s
 //
@@ -54,19 +42,6 @@ func xorKeyStreamAVX(dst, src []byte, block, state *[64]byte, rounds int) int
 //
 //go:noescape
 func xorKeyStreamAVX2(dst, src []byte, block, state *[64]byte, rounds int) int
-
-func hChaCha20(out *[32]byte, nonce *[16]byte, key *[32]byte) {
-	switch {
-	case useAVX:
-		hChaCha20AVX(out, nonce, key)
-	case useSSSE3:
-		hChaCha20SSSE3(out, nonce, key)
-	case useSSE2:
-		hChaCha20SSE2(out, nonce, key)
-	default:
-		hChaCha20Generic(out, nonce, key)
-	}
-}
 
 func xorKeyStream(dst, src []byte, block, state *[64]byte, rounds int) int {
 	switch {

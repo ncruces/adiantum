@@ -1,6 +1,6 @@
 //go:build gc
 
-package chacha
+package xchacha
 
 func init() {
 	useVX = true
@@ -37,10 +37,6 @@ func xorKeyStream(dst, src []byte, block, state *[64]byte, rounds int) int {
 	default:
 		return xorKeyStreamGeneric(dst, src, block, state, rounds)
 	}
-}
-
-func hChaCha20(out *[32]byte, nonce *[16]byte, key *[32]byte) {
-	hChaCha20Generic(out, nonce, key)
 }
 
 //go:noescape

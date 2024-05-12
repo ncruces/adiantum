@@ -2,6 +2,9 @@
 // Use of this source code is governed by a license that can be
 // found in the LICENSE file.
 
+// Originally from:
+// https://github.com/aead/chacha20/tree/master/chacha
+
 //go:build gc
 
 #include "const.s"
@@ -23,67 +26,6 @@
 	INCL dst;          \
 	DECL len;          \
 	JG   FINALIZE_LOOP \
-
-#define Dst DI
-#define Nonce AX
-#define Key BX
-#define Rounds DX
-
-// func hChaCha20SSE2(out *[32]byte, nonce *[16]byte, key *[32]byte)
-TEXT ·hChaCha20SSE2(SB), 4, $0-12
-	MOVL out+0(FP), Dst
-	MOVL nonce+4(FP), Nonce
-	MOVL key+8(FP), Key
-
-	MOVOU ·sigma<>(SB), X0
-	MOVOU 0*16(Key), X1
-	MOVOU 1*16(Key), X2
-	MOVOU 0*16(Nonce), X3
-	MOVL  $20, Rounds
-
-chacha_loop:
-	CHACHA_QROUND_SSE2(X0, X1, X2, X3, X4)
-	CHACHA_SHUFFLE_SSE(X1, X2, X3)
-	CHACHA_QROUND_SSE2(X0, X1, X2, X3, X4)
-	CHACHA_SHUFFLE_SSE(X3, X2, X1)
-	SUBL $2, Rounds
-	JNZ  chacha_loop
-
-	MOVOU X0, 0*16(Dst)
-	MOVOU X3, 1*16(Dst)
-	RET
-
-// func hChaCha20SSSE3(out *[32]byte, nonce *[16]byte, key *[32]byte)
-TEXT ·hChaCha20SSSE3(SB), 4, $0-12
-	MOVL out+0(FP), Dst
-	MOVL nonce+4(FP), Nonce
-	MOVL key+8(FP), Key
-
-	MOVOU ·sigma<>(SB), X0
-	MOVOU 0*16(Key), X1
-	MOVOU 1*16(Key), X2
-	MOVOU 0*16(Nonce), X3
-	MOVL  $20, Rounds
-
-	MOVOU ·rol16<>(SB), X5
-	MOVOU ·rol8<>(SB), X6
-
-chacha_loop:
-	CHACHA_QROUND_SSSE3(X0, X1, X2, X3, X4, X5, X6)
-	CHACHA_SHUFFLE_SSE(X1, X2, X3)
-	CHACHA_QROUND_SSSE3(X0, X1, X2, X3, X4, X5, X6)
-	CHACHA_SHUFFLE_SSE(X3, X2, X1)
-	SUBL $2, Rounds
-	JNZ  chacha_loop
-
-	MOVOU X0, 0*16(Dst)
-	MOVOU X3, 1*16(Dst)
-	RET
-
-#undef Dst
-#undef Nonce
-#undef Key
-#undef Rounds
 
 #define State AX
 #define Dst DI
