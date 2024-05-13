@@ -5,7 +5,7 @@
 // Originally from:
 // https://github.com/aead/chacha20/tree/master/chacha
 
-//go:build !(gc && (386 || amd64 || arm64))
+//go:build !(gc && (386 || amd64 || arm64 || s390x))
 
 package xchacha
 
